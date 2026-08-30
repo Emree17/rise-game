@@ -4,24 +4,26 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     scripts:
-      - name: Install dependencies and Capacitor iOS
+      - name: Prepare Web Directory and Dependencies
         script: |
+          mkdir -p www
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/ios
-      - name: Create and Sync iOS Platform
+      - name: Generate iOS Platform
         script: |
           npx cap add ios || true
           npx cap sync ios
-      - name: Build iOS App
+      - name: Build iOS App Project
         script: |
-          xcodebuild -workspace ios/App/App.xcworkspace \
+          cd ios/App
+          xcodebuild -project App.xcodeproj \
                      -scheme App \
                      -sdk iphoneos \
                      -configuration Release \
                      CODE_SIGNING_ALLOWED=NO \
                      CODE_SIGN_IDENTITY="" \
                      CODE_SIGNING_REQUIRED=NO \
-                     build
+                     clean build
     artifacts:
+      - ios/App/build/Release-iphoneos/*.app
       - ios/App/Build/Products/Release-iphoneos/*.app
-      - build/*.xcarchive
