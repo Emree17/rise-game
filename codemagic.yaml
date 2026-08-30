@@ -4,20 +4,21 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     scripts:
-      - name: Extract zip archive
-        script: |
-          unzip rise.zip
-          cd rise
-          rm -rf node_modules package-lock.json
       - name: Install dependencies
         script: |
-          cd rise
           npm install
-          chmod +x node_modules/.bin/*
-      - name: Build Capacitor iOS
+      - name: Sync Capacitor iOS
         script: |
-          cd rise
           npx cap sync ios
-          xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -archivePath build/App.xcarchive archive
+      - name: Build iOS Archive
+        script: |
+          xcodebuild -workspace ios/App/App.xcworkspace \
+                     -scheme App \
+                     -configuration Release \
+                     -archivePath build/App.xcarchive \
+                     archive \
+                     CODE_SIGNING_ALLOWED=NO \
+                     CODE_SIGN_IDENTITY="" \
+                     CODE_SIGNING_REQUIRED=NO
     artifacts:
-      - rise/build/*.xcarchive
+      - build/*.xcarchive
