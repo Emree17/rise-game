@@ -7,10 +7,13 @@ workflows:
       - name: Extract zip archive
         script: |
           unzip rise.zip
+          cd rise
+          rm -rf node_modules package-lock.json
       - name: Install dependencies
         script: |
           cd rise
           npm install
+          chmod +x node_modules/.bin/*
       - name: Build Capacitor iOS
         script: |
           cd rise
